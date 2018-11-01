@@ -2,7 +2,7 @@
 import re
 from dragonfly import Clipboard
 
-file_path = "minimum wage essay.tex"
+file_path = ""
 
 def compile_regex_list(list):
     regex_list = []

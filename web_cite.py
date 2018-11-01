@@ -16,7 +16,7 @@ def request_page(url):
     return htmlsoup
 
 '''
-Returns a bibTeX citation for online resources given a urlself.
+Returns a bibTeX citation for online resources given a url.
 eg running bibtex_from_link("https://www.thetimes.co.uk/edition/business/higher-oil-prices-push-shell-profits-up50-x7kk3dg90")
 returns:
 @online{Higheroilprices,
