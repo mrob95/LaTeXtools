@@ -2,7 +2,7 @@
 
 Some simple but useful scripts for improving productivity with LaTeX. Current functionality:
 
-* `book_cite.py` - Take the title of an academic work, search Google scholar for it and then return a bibTeX citation for the first result, of the form:
+* `paper_cite.py` - Take the title of an academic work, search Google scholar for it and then return a bibTeX citation for the first result, of the form:
 ```
 @article{alesina2018or,
   title={Is it the "How" or the "When" that Matters in Fiscal Adjustments?},
@@ -16,7 +16,7 @@ Some simple but useful scripts for improving productivity with LaTeX. Current fu
 }
 ```
 
-* `paper_cite.py` Take the title of a book, search goodreads for it, scrape the key data from the first result and return a citation of the form:
+* `book_cite.py` Take the title of a book, search goodreads for it, scrape the key data from the first result and return a citation of the form:
 ```
 @book{wedgwood1938thirty,
  title={The Thirty Years War},
