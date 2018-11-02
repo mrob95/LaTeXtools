@@ -41,5 +41,5 @@ def bibtex_from_link(url):
     else:
         tag = title_split[0] + title_split[1] + title_split[2]
     date = datetime.datetime.today().strftime('%Y-%m-%d')
-    ref = "@online{" + tag + ",\n title = {" + str(title) + "},\n author = {},\n year = {},\n url = {" + url + "},\n urldate = {" + date + "},\n}\n"
+    ref = "@online{" + tag + ",\n title = {" + str(title) + "},\n author = {},\n year = {},\n url = {" + url + "},\n urldate = {" + date + "}\n}\n"
     return ref
