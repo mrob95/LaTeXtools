@@ -105,7 +105,7 @@ can be appended directly to a .bib file. Example citations:
 def build_citation(data):
     # create strings for building a bibtex tag - last name of first author, first word of title
     first_name = data["authors"][0].lower().split(" ")[-1]
-    first_title = data["title"].lower().replace("the ", "").split(" ")[0]
+    first_title = data["title"].lower().replace("the ", "").replace(":", "").replace(",", "").split(" ")[0]
 
     citation1 = "@book{"
     citation2 = ",\n " + "title={" + data["title"] + "},\n author={" + data["authors_string"] + "},\n year={"
@@ -137,7 +137,6 @@ def citation_from_name(book_name):
         ref = ""
     else:
         url = search_results[0]
-        print("url: " + url)
         data = get_book_data(url)
         ref = build_citation(data)
     return ref
