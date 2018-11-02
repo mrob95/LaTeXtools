@@ -91,8 +91,9 @@ can be appended directly to a .bib file. Example citations:
 @book{wedgwood1938thirty,
  title={The Thirty Years War},
  author={C.V. Wedgwood and Anthony Grafton},
- year={1938/2005},
- publisher={New York Review of Books}
+ year={1938},
+ publisher={New York Review of Books},
+ note={2005}
 }
 @book{russell2006like,
  title={Like Engend'ring Like: Heredity and Animal Breeding in Early Modern England},
@@ -108,7 +109,8 @@ def build_citation(data):
 
     citation1 = "@book{"
     citation2 = ",\n " + "title={" + data["title"] + "},\n author={" + data["authors_string"] + "},\n year={"
-    citation3 = "},\n publisher={" + data["publisher"] + "}\n}\n"
+    citation3 = "},\n publisher={" + data["publisher"] + "}"
+    citation4 = "\n}\n"
 
     # If the year first published is not the same as the year the returned edition was published,
     # format the year as first published/edition published
@@ -120,8 +122,9 @@ def build_citation(data):
         year_formatted = data["first_published"]
     else:
         tag = first_name + data["first_published"] + first_title
-        year_formatted = "/".join([data["first_published"], data["pub_year"]])
-    ref = citation1 + tag + citation2 + year_formatted + citation3
+        citation4 = ",\n note={" + data["pub_year"] + "}\n}\n"
+        year_formatted = data["first_published"]
+    ref = citation1 + tag + citation2 + year_formatted + citation3 + citation4
     return ref
 
 '''
