@@ -1,17 +1,19 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
 
 import sys
 sys.path.append('../')
-from scripts import book_cite, save_to_bib
+from scripts import book_cite, save_to_bib, paper_cite, web_cite
 
 bib_path = ""
 ref = ""
 
+
 window = Tk()
 
 window.title("Citation manager")
-window.geometry("1000x600")
+window.geometry("600x400")
 
 def ask_bib_dir():
     global bib_path
@@ -26,30 +28,50 @@ def book_search():
     ref_field.config(text=ref)
     print(ref)
 
+def paper_search():
+    paper_name = search_entry.get()
+    global ref
+    ref = paper_cite.bib_from_title(paper_name)
+    ref_field.config(text=ref)
+    print(ref)
+
+def web_cite():
+    web_url = search_entry.get()
+    global ref
+    ref = web_cite.bibtex_from_link(web_url)
+    ref_field.config(text=ref)
+    print(ref)
+
 def ref_save():
     save_to_bib.save_to_bib(ref, bib_path)
     saved_field.config(text="Reference successfully added")
 
-bib_path_field = Label(window, text = bib_path)
+bib_path_field = ttk.Label(window, text = bib_path)
 bib_path_field.grid(column=1, row=1)
 
-browse_button = Button(text='Browse', command=ask_bib_dir)
+browse_button = ttk.Button(text='Browse', command=ask_bib_dir)
 browse_button.grid(column=2, row=1)
 
-search_entry = Entry(window)
+search_entry = ttk.Entry(window)
 search_entry.grid(column=1, row=3)
 
-search_button = Button(text="Search for citations", command=book_search)
-search_button.grid(column=2, row=3)
+book_search_button = ttk.Button(text="Search for books", command=book_search)
+book_search_button.grid(column=2, row=3)
 
-ref_field = Label(window, text = ref)
+paper_search_button = ttk.Button(text="Search for papers", command=paper_search)
+paper_search_button.grid(column=3, row=3)
+
+web_cite_button = ttk.Button(text="Cite website", command=web_cite)
+web_cite_button.grid(column=4, row=3)
+
+ref_field = ttk.Label(window, text = ref)
 ref_field.grid(column=1, row=4)
 
-save_button = Button(text="Save to Bibliography", command=ref_save)
-save_button.grid(column=2, row=4)
+save_button = ttk.Button(text="Save to Bibliography", command=ref_save)
+save_button.grid(column=2, row=5)
 
-saved_field = Label(window)
-saved_field.grid(column=2, row=5)
+saved_field = ttk.Label(window)
+saved_field.grid(column=1, row=5)
 
 window.mainloop()
 
