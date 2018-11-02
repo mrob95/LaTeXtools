@@ -6,19 +6,23 @@ import sys
 sys.path.append('../')
 from scripts import book_cite, save_to_bib, paper_cite, web_cite
 
-bib_path = ""
-ref = ""
+def update_path_file(new_path):
+    with open("../bib_path.txt", "a+") as t:
+        t.write("\n" + new_path)
 
-
-window = Tk()
-
-window.title("Citation manager")
-window.geometry("600x400")
+def path_from_file():
+    t = open("../bib_path.txt", "r+")
+    lines = t.readlines()
+    if lines:
+        path = lines[-1]
+    else:
+        path = ""
+    return path
 
 def ask_bib_dir():
     global bib_path
     bib_path = filedialog.askopenfilename()
-    print(bib_path)
+    update_path_file(bib_path)
     bib_path_field.config(text=bib_path)
 
 def book_search():
@@ -35,7 +39,7 @@ def paper_search():
     ref_field.config(text=ref)
     print(ref)
 
-def web_cite():
+def web_search():
     web_url = search_entry.get()
     global ref
     ref = web_cite.bibtex_from_link(web_url)
@@ -46,7 +50,18 @@ def ref_save():
     save_to_bib.save_to_bib(ref, bib_path)
     saved_field.config(text="Reference successfully added")
 
-bib_path_field = ttk.Label(window, text = bib_path)
+global bib_path
+bib_path = path_from_file()
+print(bib_path)
+ref = ""
+
+window = Tk()
+
+window.title("Citation manager")
+window.geometry("600x400")
+
+bib_path_field = ttk.Label(window)
+bib_path_field.config(text = bib_path)
 bib_path_field.grid(column=1, row=1)
 
 browse_button = ttk.Button(text='Browse', command=ask_bib_dir)
@@ -61,7 +76,7 @@ book_search_button.grid(column=2, row=3)
 paper_search_button = ttk.Button(text="Search for papers", command=paper_search)
 paper_search_button.grid(column=3, row=3)
 
-web_cite_button = ttk.Button(text="Cite website", command=web_cite)
+web_cite_button = ttk.Button(text="Cite website", command=web_search)
 web_cite_button.grid(column=4, row=3)
 
 ref_field = ttk.Label(window, text = ref)
