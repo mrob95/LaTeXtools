@@ -6,88 +6,128 @@ import sys
 sys.path.append('../')
 from scripts import book_cite, save_to_bib, paper_cite, web_cite
 
-def update_path_file(new_path):
-    with open("../bib_path.txt", "a+") as t:
-        t.write("\n" + new_path)
+class CitMan(Tk):
 
-def path_from_file():
-    t = open("../bib_path.txt", "r+")
-    lines = t.readlines()
-    if lines:
-        path = lines[-1]
-    else:
-        path = ""
-    return path
+    def __init__(self):
+        Tk.__init__(self)
 
-def ask_bib_dir():
-    global bib_path
-    bib_path = filedialog.askopenfilename()
-    update_path_file(bib_path)
-    bib_path_field.config(text=bib_path)
+        self.title("Citation manager")
+        self.geometry("600x400")
 
-def book_search():
-    book_name = search_entry.get()
-    global ref
-    ref = book_cite.citation_from_name(book_name)
-    ref_field.config(text=ref)
-    print(ref)
+        self.bib_path = self.path_from_file()
+        self.reset()
 
-def paper_search():
-    paper_name = search_entry.get()
-    global ref
-    ref = paper_cite.bib_from_title(paper_name)
-    ref_field.config(text=ref)
-    print(ref)
+        self.bib_path_field = ttk.Label(self)
+        self.bib_path_field.config(text = self.bib_path)
+        self.bib_path_field.grid(column=1, row=1)
 
-def web_search():
-    web_url = search_entry.get()
-    global ref
-    ref = web_cite.bibtex_from_link(web_url)
-    ref_field.config(text=ref)
-    print(ref)
+        self.browse_button = ttk.Button(text='Browse', command=self.ask_bib_dir)
+        self.browse_button.grid(column=2, row=1)
 
-def ref_save():
-    save_to_bib.save_to_bib(ref, bib_path)
-    saved_field.config(text="Reference successfully added")
+        self.search_entry = ttk.Entry(self)
+        self.search_entry.grid(column=1, row=3)
 
-global bib_path
-bib_path = path_from_file()
-print(bib_path)
-ref = ""
+        self.book_search_button = ttk.Button(text="Search for books", command=self.book_search)
+        self.book_search_button.grid(column=2, row=3)
 
-window = Tk()
+        self.paper_search_button = ttk.Button(text="Search for papers", command=self.paper_search)
+        self.paper_search_button.grid(column=3, row=3)
 
-window.title("Citation manager")
-window.geometry("600x400")
+        self.web_cite_button = ttk.Button(text="Cite website", command=self.web_search)
+        self.web_cite_button.grid(column=4, row=3)
 
-bib_path_field = ttk.Label(window)
-bib_path_field.config(text = bib_path)
-bib_path_field.grid(column=1, row=1)
+        self.previous_button = ttk.Button(text="Previous", command=self.previous_ref)
+        self.previous_button.grid(column=3, row=4)
 
-browse_button = ttk.Button(text='Browse', command=ask_bib_dir)
-browse_button.grid(column=2, row=1)
+        self.next_button = ttk.Button(text="Next", command=self.next_ref)
+        self.next_button.grid(column=4, row=4)
 
-search_entry = ttk.Entry(window)
-search_entry.grid(column=1, row=3)
+        self.ref_field = ttk.Label(self, text = "")
+        self.ref_field.grid(column=1, row=4)
 
-book_search_button = ttk.Button(text="Search for books", command=book_search)
-book_search_button.grid(column=2, row=3)
+        self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
+        self.save_button.grid(column=2, row=5)
 
-paper_search_button = ttk.Button(text="Search for papers", command=paper_search)
-paper_search_button.grid(column=3, row=3)
+        self.saved_field = ttk.Label(self)
+        self.saved_field.grid(column=1, row=5)
 
-web_cite_button = ttk.Button(text="Cite website", command=web_search)
-web_cite_button.grid(column=4, row=3)
+    def update_path_file(self, new_path):
+        with open("../bib_path.txt", "a+") as t:
+            t.write("\n" + new_path)
 
-ref_field = ttk.Label(window, text = ref)
-ref_field.grid(column=1, row=4)
+    def path_from_file(self):
+        t = open("../bib_path.txt", "r+")
+        lines = t.readlines()
+        if lines:
+            path = lines[-1]
+        else:
+            path = ""
+        return path
 
-save_button = ttk.Button(text="Save to Bibliography", command=ref_save)
-save_button.grid(column=2, row=5)
+    def ask_bib_dir(self):
+        self.bib_path = self.filedialog.askopenfilename()
+        update_path_file(self.bib_path)
+        self.bib_path_field.config(text=bib_path)
 
-saved_field = ttk.Label(window)
-saved_field.grid(column=1, row=5)
+    def ref_save(self):
+        save_to_bib.save_to_bib(self.refs[counter], self.bib_path)
+        self.saved_field.config(text="Reference successfully added")
 
-window.mainloop()
+    def book_search(self):
+        self.reset()
+        self.type = "book"
+        book_name = self.search_entry.get()
+        self.links_list = book_cite.goodreads_results(book_name)
+        new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+        self.refs.append(new_ref)
+        self.update_ref_field()
 
-# print(book_cite.citation_from_name("the case against education"))
+    def paper_search(self):
+        self.reset()
+        self.type = "paper"
+        paper_name = self.search_entry.get()
+        self.links_list = paper_cite.google_scholar_query(paper_name)
+        new_ref = paper_cite.return_bib(self.links_list[self.counter])
+        self.refs.append(new_ref)
+        self.update_ref_field()
+
+    def web_search(self):
+        self.reset()
+        self.type = "web"
+        web_url = self.search_entry.get()
+        new_ref = web_cite.bibtex_from_link(web_url)
+        self.refs.append(new_ref)
+        self.update_ref_field()
+
+    def reset(self):
+        self.type = ""
+        self.counter = 0
+        self.refs = []
+        self.links_list = []
+
+    def update_ref_field(self):
+        self.ref_field.config(text=self.refs[self.counter])
+
+    def previous_ref(self):
+        if self.counter == 0:
+            pass
+        else:
+            self.counter = self.counter - 1
+            self.update_ref_field()
+
+    def next_ref(self):
+        self.counter = self.counter + 1
+        if self.counter < len(self.refs):
+            pass
+        else:
+            if self.type == "book":
+                new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+            elif self.type == "paper":
+                new_ref = paper_cite.return_bib(self.links_list[self.counter])
+            else:
+                new_ref = ""
+            self.refs.append(new_ref)
+        self.update_ref_field()
+
+x = CitMan()
+x.mainloop()
