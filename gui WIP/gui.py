@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+import pyperclip
 
 import sys
 sys.path.append('../')
-from scripts import book_cite, save_to_bib, paper_cite, web_cite
+from scripts import book_cite, save_to_bib, paper_cite, web_cite, tag_from_ref
 
 class CitMan(Tk):
 
@@ -12,7 +13,7 @@ class CitMan(Tk):
         Tk.__init__(self)
 
         self.title("Citation manager")
-        self.geometry("600x320")
+        self.geometry("600x360")
         self.configure(background = "white")
 
         self.bib_path = self.path_from_file()
@@ -47,11 +48,18 @@ class CitMan(Tk):
         self.ref_field.grid(column=0, row=4, columnspan = 5, pady=20)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
-        self.save_button.grid(column=3, row=5)
+        self.save_button.grid(column=2, row=5)
 
-        self.saved_field = ttk.Label(self)
-        self.saved_field.config(background = "white")
-        self.saved_field.grid(column=0, row=6, columnspan = 2)
+        self.copy_tag_button = ttk.Button(text="Copy tag to clipboard", command=self.tag_to_clipboard)
+        self.copy_tag_button.grid(column=3, row=5, columnspan = 2)
+
+        self.numbers_field = ttk.Label(self)
+        self.numbers_field.config(background = "white")
+        self.numbers_field.grid(column=0, row=6, columnspan = 2)
+
+        self.notifications_field = ttk.Label(self)
+        self.notifications_field.config(background = "white")
+        self.notifications_field.grid(column=0, row=7, columnspan = 2)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
@@ -73,7 +81,10 @@ class CitMan(Tk):
 
     def ref_save(self):
         save_to_bib.save_to_bib(self.refs[self.counter], self.bib_path)
-        self.saved_field.config(text="Reference successfully added")
+        self.notifications_field.config(text="Reference successfully added")
+
+    def current_ref(self):
+        return self.refs[self.counter]
 
     def book_search(self):
         self.reset()
@@ -114,8 +125,8 @@ class CitMan(Tk):
         self.links_list = []
 
     def update_ref_field(self):
-        self.ref_field.config(text=self.refs[self.counter])
-        self.saved_field.config(text=str(self.counter + 1))
+        self.ref_field.config(text=self.current_ref())
+        self.numbers_field.config(text=str(self.counter + 1))
 
     def previous_ref(self):
         if self.counter == 0:
@@ -128,6 +139,7 @@ class CitMan(Tk):
         self.counter = self.counter + 1
         if self.counter >= len(self.links_list):
             new_ref = "Limit reached"
+            self.refs.append(new_ref)
         else:
             if self.counter < len(self.refs):
                 pass
@@ -138,8 +150,16 @@ class CitMan(Tk):
                     new_ref = paper_cite.return_bib(self.links_list[self.counter])
                 else:
                     new_ref = ""
-        self.refs.append(new_ref)
+                self.refs.append(new_ref)
         self.update_ref_field()
+
+    def tag_to_clipboard(self):
+        tag = tag_from_ref.get_tag(self.current_ref())
+        if tag == "No tag found":
+            self.notifications_field.config(text = tag)
+        else:
+            pyperclip.copy(tag)
+            self.notifications_field.config(text = tag + " added to clipboard")
 
 x = CitMan()
 x.mainloop()
