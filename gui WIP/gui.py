@@ -103,7 +103,7 @@ class CitMan(Tk):
 
     def book_search(self):
         self.reset()
-        self.type = "book"
+        self.search_type = "book"
         book_name = self.search_entry.get()
         self.links_list = book_cite.goodreads_results(book_name)
         if self.links_list:
@@ -115,7 +115,7 @@ class CitMan(Tk):
 
     def paper_search(self):
         self.reset()
-        self.type = "paper"
+        self.search_type = "paper"
         paper_name = self.search_entry.get()
         self.links_list = paper_cite.google_scholar_query(paper_name)
         if self.links_list:
@@ -127,7 +127,7 @@ class CitMan(Tk):
 
     def web_search(self):
         self.reset()
-        self.type = "web"
+        self.search_type = "web"
         web_url = self.search_entry.get()
         new_ref = web_cite.bibtex_from_link(web_url)
         self.refs.append(new_ref)
@@ -137,7 +137,7 @@ class CitMan(Tk):
         webbrowser.open_new(self.current_link())
 
     def reset(self):
-        self.type = ""
+        self.search_type = ""
         self.counter = 0
         self.refs = []
         self.links_list = []
@@ -163,9 +163,9 @@ class CitMan(Tk):
             if self.counter < len(self.refs):
                 pass
             else:
-                if self.type == "book":
+                if self.search_type == "book":
                     new_ref = book_cite.citation_from_url(self.current_link())
-                elif self.type == "paper":
+                elif self.search_type == "paper":
                     new_ref = paper_cite.return_bib(self.current_link())
                 else:
                     new_ref = ""
