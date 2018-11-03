@@ -21,51 +21,55 @@ class CitMan(Tk):
         self.bib_path = self.path_from_file()
         self.reset()
 
+        self.padding = ttk.Label(self)
+        self.padding.config(background = "white")
+        self.padding.grid(column = 0, row =0, padx = 10, pady = 2)
+
         self.bib_path_field = ttk.Label(self, width = 50)
         self.bib_path_field.config(text = self.bib_path, background = "white")
-        self.bib_path_field.grid(column=0, row=1, columnspan=2)
+        self.bib_path_field.grid(column=1, row=1, columnspan=2)
 
         self.browse_button = ttk.Button(text='Browse', command=self.ask_bib_dir)
-        self.browse_button.grid(column=2, row=1)
+        self.browse_button.grid(column=3, row=1)
 
         self.search_entry = ttk.Entry(self, width = 50)
-        self.search_entry.grid(column=0, row=3, columnspan=2)
+        self.search_entry.grid(column=1, row=3, columnspan=2)
 
         self.book_search_button = ttk.Button(text="Search for books", command=self.book_search)
-        self.book_search_button.grid(column=2, row=3)
+        self.book_search_button.grid(column=3, row=3)
 
         self.paper_search_button = ttk.Button(text="Search for papers", command=self.paper_search)
-        self.paper_search_button.grid(column=3, row=3)
+        self.paper_search_button.grid(column=4, row=3)
 
         self.web_cite_button = ttk.Button(text="Cite website", command=self.web_search)
-        self.web_cite_button.grid(column=4, row=3)
+        self.web_cite_button.grid(column=5, row=3)
 
         self.previous_button = ttk.Button(text="Previous", command=self.previous_ref)
-        self.previous_button.grid(column=0, row=6)
+        self.previous_button.grid(column=1, row=6)
 
         self.next_button = ttk.Button(text="Next", command=self.next_ref)
-        self.next_button.grid(column=1, row=6)
+        self.next_button.grid(column=2, row=6)
 
         self.link_field = ttk.Label(self, text = "", width = 100, cursor = "hand2")
-        self.link_field.grid(column=0, row=4, columnspan = 5)
+        self.link_field.grid(column=1, row=4, columnspan = 5)
         self.link_field.bind("<Button-1>", self.open_link)
 
         self.ref_field = ttk.Label(self, text = "")
-        self.ref_field.grid(column=0, row=5, columnspan = 5, pady=20)
+        self.ref_field.grid(column=1, row=5, columnspan = 5, pady=20)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
-        self.save_button.grid(column=2, row=6)
+        self.save_button.grid(column=3, row=6)
 
         self.copy_tag_button = ttk.Button(text="Copy tag to clipboard", command=self.tag_to_clipboard)
-        self.copy_tag_button.grid(column=3, row=6, columnspan = 2)
+        self.copy_tag_button.grid(column=4, row=6, columnspan = 2)
 
         self.numbers_field = ttk.Label(self)
         self.numbers_field.config(background = "white")
-        self.numbers_field.grid(column=0, row=7, columnspan = 2)
+        self.numbers_field.grid(column=1, row=7, columnspan = 2)
 
         self.notifications_field = ttk.Label(self)
         self.notifications_field.config(background = "white")
-        self.notifications_field.grid(column=0, row=8, columnspan = 2)
+        self.notifications_field.grid(column=1, row=8, columnspan = 2)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
