@@ -13,18 +13,19 @@ class CitMan(Tk):
 
         self.title("Citation manager")
         self.geometry("600x320")
+        self.configure(background = "white")
 
         self.bib_path = self.path_from_file()
         self.reset()
 
-        self.bib_path_field = ttk.Label(self)
-        self.bib_path_field.config(text = self.bib_path)
+        self.bib_path_field = ttk.Label(self, width = 50)
+        self.bib_path_field.config(text = self.bib_path, background = "white")
         self.bib_path_field.grid(column=0, row=1, columnspan=2)
 
         self.browse_button = ttk.Button(text='Browse', command=self.ask_bib_dir)
         self.browse_button.grid(column=2, row=1)
 
-        self.search_entry = ttk.Entry(self)
+        self.search_entry = ttk.Entry(self, width = 50)
         self.search_entry.grid(column=0, row=3, columnspan=2)
 
         self.book_search_button = ttk.Button(text="Search for books", command=self.book_search)
@@ -49,7 +50,8 @@ class CitMan(Tk):
         self.save_button.grid(column=3, row=5)
 
         self.saved_field = ttk.Label(self)
-        self.saved_field.grid(column=0, row=6)
+        self.saved_field.config(background = "white")
+        self.saved_field.grid(column=0, row=6, columnspan = 2)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
@@ -113,6 +115,7 @@ class CitMan(Tk):
 
     def update_ref_field(self):
         self.ref_field.config(text=self.refs[self.counter])
+        self.saved_field.config(text=str(self.counter + 1))
 
     def previous_ref(self):
         if self.counter == 0:
@@ -123,16 +126,19 @@ class CitMan(Tk):
 
     def next_ref(self):
         self.counter = self.counter + 1
-        if self.counter < len(self.refs):
-            pass
+        if self.counter >= len(self.links_list):
+            new_ref = "Limit reached"
         else:
-            if self.type == "book":
-                new_ref = book_cite.citation_from_url(self.links_list[self.counter])
-            elif self.type == "paper":
-                new_ref = paper_cite.return_bib(self.links_list[self.counter])
+            if self.counter < len(self.refs):
+                pass
             else:
-                new_ref = ""
-            self.refs.append(new_ref)
+                if self.type == "book":
+                    new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+                elif self.type == "paper":
+                    new_ref = paper_cite.return_bib(self.links_list[self.counter])
+                else:
+                    new_ref = ""
+        self.refs.append(new_ref)
         self.update_ref_field()
 
 x = CitMan()
