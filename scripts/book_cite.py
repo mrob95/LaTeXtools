@@ -127,6 +127,13 @@ def build_citation(data):
     ref = citation1 + tag + citation2 + year_formatted + citation3 + citation4
     return ref
 
+
+def citation_from_url(url):
+    data = get_book_data(url)
+    ref = build_citation(data)
+    return ref
+
+
 '''
 Searches a given book name, builds citation from the first result, if any
 '''
@@ -137,6 +144,7 @@ def citation_from_name(book_name):
         ref = ""
     else:
         url = search_results[0]
+        print("url: " + url)
         data = get_book_data(url)
         ref = build_citation(data)
     return ref
