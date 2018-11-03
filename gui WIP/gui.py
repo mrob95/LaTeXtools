@@ -12,20 +12,20 @@ class CitMan(Tk):
         Tk.__init__(self)
 
         self.title("Citation manager")
-        self.geometry("600x400")
+        self.geometry("600x320")
 
         self.bib_path = self.path_from_file()
         self.reset()
 
         self.bib_path_field = ttk.Label(self)
         self.bib_path_field.config(text = self.bib_path)
-        self.bib_path_field.grid(column=1, row=1)
+        self.bib_path_field.grid(column=0, row=1, columnspan=2)
 
         self.browse_button = ttk.Button(text='Browse', command=self.ask_bib_dir)
         self.browse_button.grid(column=2, row=1)
 
         self.search_entry = ttk.Entry(self)
-        self.search_entry.grid(column=1, row=3)
+        self.search_entry.grid(column=0, row=3, columnspan=2)
 
         self.book_search_button = ttk.Button(text="Search for books", command=self.book_search)
         self.book_search_button.grid(column=2, row=3)
@@ -37,19 +37,19 @@ class CitMan(Tk):
         self.web_cite_button.grid(column=4, row=3)
 
         self.previous_button = ttk.Button(text="Previous", command=self.previous_ref)
-        self.previous_button.grid(column=3, row=4)
+        self.previous_button.grid(column=0, row=5)
 
         self.next_button = ttk.Button(text="Next", command=self.next_ref)
-        self.next_button.grid(column=4, row=4)
+        self.next_button.grid(column=1, row=5)
 
         self.ref_field = ttk.Label(self, text = "")
-        self.ref_field.grid(column=1, row=4)
+        self.ref_field.grid(column=0, row=4, columnspan = 5, pady=20)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
-        self.save_button.grid(column=2, row=5)
+        self.save_button.grid(column=3, row=5)
 
         self.saved_field = ttk.Label(self)
-        self.saved_field.grid(column=1, row=5)
+        self.saved_field.grid(column=0, row=6)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
@@ -78,7 +78,10 @@ class CitMan(Tk):
         self.type = "book"
         book_name = self.search_entry.get()
         self.links_list = book_cite.goodreads_results(book_name)
-        new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+        if self.links_list:
+            new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+        else:
+            new_ref = "No results found on goodreads"
         self.refs.append(new_ref)
         self.update_ref_field()
 
@@ -87,7 +90,10 @@ class CitMan(Tk):
         self.type = "paper"
         paper_name = self.search_entry.get()
         self.links_list = paper_cite.google_scholar_query(paper_name)
-        new_ref = paper_cite.return_bib(self.links_list[self.counter])
+        if self.links_list:
+            new_ref = paper_cite.return_bib(self.links_list[self.counter])
+        else:
+            new_ref = "No results found on Google scholar"
         self.refs.append(new_ref)
         self.update_ref_field()
 

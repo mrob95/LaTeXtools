@@ -27,7 +27,9 @@ def goodreads_results(searchstr):
         link_url = link.get("href")
         if type(link_url) is str:
             if refre.search(link_url):
-                links_list.append("https://www.goodreads.com" + link_url)
+                full_url = "https://www.goodreads.com" + link_url
+                if full_url not in links_list:
+                    links_list.append(full_url)
     return links_list
 
 '''
