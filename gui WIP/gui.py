@@ -51,11 +51,11 @@ class CitMan(Tk):
         self.next_button.grid(column=2, row=6)
 
         self.link_field = ttk.Label(self, text = "", width = 100, cursor = "hand2")
-        self.link_field.grid(column=1, row=4, columnspan = 5)
+        self.link_field.grid(column=1, row=4, columnspan = 5, pady=10)
         self.link_field.bind("<Button-1>", self.open_link)
 
-        self.ref_field = ttk.Label(self, text = "")
-        self.ref_field.grid(column=1, row=5, columnspan = 5, pady=20)
+        self.ref_field = ttk.Label(self, text = "", width = 100)
+        self.ref_field.grid(column=1, row=5, columnspan = 5, pady=10)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
         self.save_button.grid(column=3, row=6)
@@ -69,7 +69,7 @@ class CitMan(Tk):
 
         self.notifications_field = ttk.Label(self)
         self.notifications_field.config(background = "white")
-        self.notifications_field.grid(column=1, row=8, columnspan = 2)
+        self.notifications_field.grid(column=3, row=7, columnspan = 2)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
