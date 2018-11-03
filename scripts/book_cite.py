@@ -7,6 +7,9 @@ except ImportError:
 from dragonfly import Clipboard, Key
 import re
 
+
+import time
+
 # takes URL, returns beautiful soup
 def request_page(url):
     header = {'User-Agent': 'Mozilla/5.0'}

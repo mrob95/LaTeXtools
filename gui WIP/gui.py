@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import pyperclip
+import webbrowser
+
 
 import sys
 sys.path.append('../')
@@ -13,7 +15,7 @@ class CitMan(Tk):
         Tk.__init__(self)
 
         self.title("Citation manager")
-        self.geometry("600x360")
+        self.geometry("650x360")
         self.configure(background = "white")
 
         self.bib_path = self.path_from_file()
@@ -39,27 +41,31 @@ class CitMan(Tk):
         self.web_cite_button.grid(column=4, row=3)
 
         self.previous_button = ttk.Button(text="Previous", command=self.previous_ref)
-        self.previous_button.grid(column=0, row=5)
+        self.previous_button.grid(column=0, row=6)
 
         self.next_button = ttk.Button(text="Next", command=self.next_ref)
-        self.next_button.grid(column=1, row=5)
+        self.next_button.grid(column=1, row=6)
+
+        self.link_field = ttk.Label(self, text = "", width = 100, cursor = "hand2")
+        self.link_field.grid(column=0, row=4, columnspan = 5)
+        self.link_field.bind("<Button-1>", self.open_link)
 
         self.ref_field = ttk.Label(self, text = "")
-        self.ref_field.grid(column=0, row=4, columnspan = 5, pady=20)
+        self.ref_field.grid(column=0, row=5, columnspan = 5, pady=20)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
-        self.save_button.grid(column=2, row=5)
+        self.save_button.grid(column=2, row=6)
 
         self.copy_tag_button = ttk.Button(text="Copy tag to clipboard", command=self.tag_to_clipboard)
-        self.copy_tag_button.grid(column=3, row=5, columnspan = 2)
+        self.copy_tag_button.grid(column=3, row=6, columnspan = 2)
 
         self.numbers_field = ttk.Label(self)
         self.numbers_field.config(background = "white")
-        self.numbers_field.grid(column=0, row=6, columnspan = 2)
+        self.numbers_field.grid(column=0, row=7, columnspan = 2)
 
         self.notifications_field = ttk.Label(self)
         self.notifications_field.config(background = "white")
-        self.notifications_field.grid(column=0, row=7, columnspan = 2)
+        self.notifications_field.grid(column=0, row=8, columnspan = 2)
 
     def update_path_file(self, new_path):
         with open("../bib_path.txt", "a+") as t:
@@ -84,7 +90,16 @@ class CitMan(Tk):
         self.notifications_field.config(text="Reference successfully added")
 
     def current_ref(self):
-        return self.refs[self.counter]
+        if self.refs:
+            return self.refs[self.counter]
+        else:
+            return ""
+
+    def current_link(self):
+        if self.links_list:
+            return self.links_list[self.counter]
+        else:
+            return ""
 
     def book_search(self):
         self.reset()
@@ -92,11 +107,11 @@ class CitMan(Tk):
         book_name = self.search_entry.get()
         self.links_list = book_cite.goodreads_results(book_name)
         if self.links_list:
-            new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+            new_ref = book_cite.citation_from_url(self.current_link())
         else:
             new_ref = "No results found on goodreads"
         self.refs.append(new_ref)
-        self.update_ref_field()
+        self.update_fields()
 
     def paper_search(self):
         self.reset()
@@ -104,11 +119,11 @@ class CitMan(Tk):
         paper_name = self.search_entry.get()
         self.links_list = paper_cite.google_scholar_query(paper_name)
         if self.links_list:
-            new_ref = paper_cite.return_bib(self.links_list[self.counter])
+            new_ref = paper_cite.return_bib(self.current_link())
         else:
             new_ref = "No results found on Google scholar"
         self.refs.append(new_ref)
-        self.update_ref_field()
+        self.update_fields()
 
     def web_search(self):
         self.reset()
@@ -116,7 +131,10 @@ class CitMan(Tk):
         web_url = self.search_entry.get()
         new_ref = web_cite.bibtex_from_link(web_url)
         self.refs.append(new_ref)
-        self.update_ref_field()
+        self.update_fields()
+
+    def open_link(self, event=None):
+        webbrowser.open_new(self.current_link())
 
     def reset(self):
         self.type = ""
@@ -124,7 +142,8 @@ class CitMan(Tk):
         self.refs = []
         self.links_list = []
 
-    def update_ref_field(self):
+    def update_fields(self):
+        self.link_field.config(text = self.current_link())
         self.ref_field.config(text=self.current_ref())
         self.numbers_field.config(text=str(self.counter + 1))
 
@@ -133,7 +152,7 @@ class CitMan(Tk):
             pass
         else:
             self.counter = self.counter - 1
-            self.update_ref_field()
+            self.update_fields()
 
     def next_ref(self):
         self.counter = self.counter + 1
@@ -145,13 +164,13 @@ class CitMan(Tk):
                 pass
             else:
                 if self.type == "book":
-                    new_ref = book_cite.citation_from_url(self.links_list[self.counter])
+                    new_ref = book_cite.citation_from_url(self.current_link())
                 elif self.type == "paper":
-                    new_ref = paper_cite.return_bib(self.links_list[self.counter])
+                    new_ref = paper_cite.return_bib(self.current_link())
                 else:
                     new_ref = ""
                 self.refs.append(new_ref)
-        self.update_ref_field()
+        self.update_fields()
 
     def tag_to_clipboard(self):
         tag = tag_from_ref.get_tag(self.current_ref())
