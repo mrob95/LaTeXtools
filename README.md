@@ -1,5 +1,7 @@
 # LaTeXtools
 
+![](images/gui_demo.jpg)
+
 Some simple but useful scripts for improving productivity with LaTeX. Current functionality:
 
 * `paper_cite.py` - Take the title of an academic work, search Google scholar for it and then return a bibTeX citation for the first result, of the form:
@@ -21,8 +23,9 @@ Some simple but useful scripts for improving productivity with LaTeX. Current fu
 @book{wedgwood1938thirty,
  title={The Thirty Years War},
  author={C.V. Wedgwood and Anthony Grafton},
- year={1938/2005},
- publisher={New York Review of Books}
+ year={1938},
+ publisher={New York Review of Books},
+ note={2005}
 }
 ```
 
