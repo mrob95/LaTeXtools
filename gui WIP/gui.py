@@ -70,7 +70,7 @@ class CitMan(Tk):
         self.bib_path_field.config(text=bib_path)
 
     def ref_save(self):
-        save_to_bib.save_to_bib(self.refs[counter], self.bib_path)
+        save_to_bib.save_to_bib(self.refs[self.counter], self.bib_path)
         self.saved_field.config(text="Reference successfully added")
 
     def book_search(self):
