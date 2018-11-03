@@ -67,7 +67,7 @@ class CitMan(Tk):
     def ask_bib_dir(self):
         self.bib_path = self.filedialog.askopenfilename()
         update_path_file(self.bib_path)
-        self.bib_path_field.config(text=bib_path)
+        self.bib_path_field.config(text=self.bib_path)
 
     def ref_save(self):
         save_to_bib.save_to_bib(self.refs[self.counter], self.bib_path)
