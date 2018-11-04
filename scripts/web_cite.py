@@ -34,7 +34,7 @@ def bibtex_from_link(url):
         title = ""
     else:
         htmlsoup = request_page(url)
-        title = htmlsoup.title.text.replace("\n", "").strip()
+        title = htmlsoup.title.text.replace("\n", "").replace(":", "").replace(",", "").strip()
         title_split = title.split()
         if len(title_split)==0:
             tag = ""

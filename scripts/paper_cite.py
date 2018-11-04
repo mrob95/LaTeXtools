@@ -17,6 +17,7 @@ def request_page(url):
 
 '''
 Takes any search string, returns a list of links to google scholar bibTeX citations
+Thanks to venthur/gscholar
 '''
 def google_scholar_query(searchstr):
     searchstr = '/scholar?q=' + quote(searchstr)

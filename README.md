@@ -1,8 +1,8 @@
 # LaTeXtools
 
-![](images/gui_demo.jpg)
+Some simple but useful scripts for improving productivity with LaTeX, including a simple citation manager which can scrape citations for books and academic works from goodreads and Google scholar:
 
-Some simple but useful scripts for improving productivity with LaTeX. Current functionality:
+![](images/gui_demo.jpg)
 
 * `paper_cite.py` - Take the title of an academic work, search Google scholar for it and then return a bibTeX citation for the first result, of the form:
 ```

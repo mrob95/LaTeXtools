@@ -133,7 +133,8 @@ class CitMan(Tk):
         self.reset()
         self.search_type = "web"
         web_url = self.search_entry.get()
-        new_ref = web_cite.bibtex_from_link(web_url)
+        self.links_list.append(web_url)
+        new_ref = web_cite.bibtex_from_link(self.current_link())
         self.refs.append(new_ref)
         self.update_fields()
 
