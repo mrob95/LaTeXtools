@@ -1,6 +1,6 @@
 # LaTeXtools
 
-Some simple but useful scripts for improving productivity with LaTeX, including a simple citation manager which can scrape citations for books and academic works from goodreads and Google scholar:
+Some simple but useful scripts for improving productivity with LaTeX, including a citation manager which can scrape citations for books and academic works from goodreads and Google scholar:
 
 ![](images/gui_demo.jpg)
 

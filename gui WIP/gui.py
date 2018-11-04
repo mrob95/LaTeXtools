@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 import pyperclip
 import webbrowser
-
+import json
 
 import sys
 sys.path.append('../')
@@ -18,7 +18,8 @@ class CitMan(Tk):
         self.geometry("650x360")
         self.configure(background = "white")
 
-        self.bib_path = self.path_from_file()
+        self.settings = {}
+        self.get_settings()
         self.reset()
 
         self.padding = ttk.Label(self)
@@ -26,7 +27,7 @@ class CitMan(Tk):
         self.padding.grid(column = 0, row =0, padx = 10, pady = 2)
 
         self.bib_path_field = ttk.Label(self, width = 50)
-        self.bib_path_field.config(text = self.bib_path, background = "white")
+        self.bib_path_field.config(text = self.settings["bib_path"], background = "white")
         self.bib_path_field.grid(column=1, row=1, columnspan=2)
 
         self.browse_button = ttk.Button(text='Browse', command=self.ask_bib_dir)
@@ -71,26 +72,23 @@ class CitMan(Tk):
         self.notifications_field.config(background = "white")
         self.notifications_field.grid(column=3, row=7, columnspan = 2)
 
-    def update_path_file(self, new_path):
-        with open("../bib_path.txt", "a+") as t:
-            t.write("\n" + new_path)
+    def update_settings_file(self):
+        with open('../settings.json', 'w+') as fp:
+            json.dump(self.settings, fp)
 
-    def path_from_file(self):
-        t = open("../bib_path.txt", "r+")
-        lines = t.readlines()
-        if lines:
-            path = lines[-1]
-        else:
-            path = ""
-        return path
+    def get_settings(self):
+        with open('../settings.json', 'r+') as fp:
+            self.settings = json.load(fp)
+        if not self.settings:
+            self.settings = {"bib_path":""}
 
     def ask_bib_dir(self):
-        self.bib_path = self.filedialog.askopenfilename()
-        update_path_file(self.bib_path)
-        self.bib_path_field.config(text=self.bib_path)
+        self.settings["bib_path"] = filedialog.askopenfilename()
+        self.update_settings_file()
+        self.update_fields()
 
     def ref_save(self):
-        save_to_bib.save_to_bib(self.refs[self.counter], self.bib_path)
+        save_to_bib.save_to_bib(self.refs[self.counter], self.settings["bib_path"])
         self.notifications_field.config(text="Reference successfully added")
 
     def current_ref(self):
@@ -151,6 +149,7 @@ class CitMan(Tk):
         self.link_field.config(text = self.current_link())
         self.ref_field.config(text=self.current_ref())
         self.numbers_field.config(text=str(self.counter + 1))
+        self.bib_path_field.config(text=self.settings["bib_path"])
 
     def previous_ref(self):
         if self.counter == 0:
