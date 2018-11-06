@@ -184,5 +184,7 @@ class CitMan(Tk):
             pyperclip.copy(tag)
             self.notifications_field.config(text = tag + " added to clipboard")
 
-x = CitMan()
-x.mainloop()
+def show():
+    x = CitMan()
+    x.mainloop()
+show()

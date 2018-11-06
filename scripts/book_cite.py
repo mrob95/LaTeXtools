@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-try:
-    from urllib.request import Request, urlopen, quote
-except ImportError:
-    from urllib2 import Request, urlopen, quote
-from dragonfly import Clipboard, Key
+from urllib.request import Request, urlopen, quote
 import re
 
 

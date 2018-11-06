@@ -1,8 +1,4 @@
-try:
-    from urllib.request import Request, urlopen, quote
-except ImportError:
-    from urllib2 import Request, urlopen, quote
-
+from urllib.request import Request, urlopen, quote
 from bs4 import BeautifulSoup
 import re
 

@@ -4,6 +4,10 @@ Some simple but useful scripts for improving productivity with LaTeX, including 
 
 ![](images/gui_demo.jpg)
 
+And a word counter which can calculate accurate word counts for LaTeX documents:
+
+![](images/word_counter_demo.jpg)
+
 * `paper_cite.py` - Take the title of an academic work, search Google scholar for it and then return a bibTeX citation for the first result, of the form:
 ```
 @article{alesina2018or,
