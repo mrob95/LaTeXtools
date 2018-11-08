@@ -10,17 +10,17 @@ sys.path.append('../')
 from scripts import book_cite, save_to_bib, paper_cite, web_cite, tag_from_ref
 
 class CitMan(Tk):
-
     def __init__(self):
         Tk.__init__(self)
 
         self.title("Citation manager")
-        self.geometry("650x360")
+        self.geometry("650x400")
         self.configure(background = "white")
 
         self.settings = {}
         self.get_settings()
         self.reset()
+        self.create_menu_options()
 
         self.padding = ttk.Label(self)
         self.padding.config(background = "white")
@@ -34,60 +34,70 @@ class CitMan(Tk):
         self.browse_button.grid(column=3, row=1)
 
         self.search_entry = ttk.Entry(self, width = 50)
-        self.search_entry.grid(column=1, row=3, columnspan=2)
+        self.search_entry.focus_set()
+        self.search_entry.grid(column=1, row=5, columnspan=2)
+        self.search_entry.bind("<Return>", self.search)
+        self.search_entry.bind("<Tab>", lambda e: self.menu.focus_set())
+        self.bind("<Control-l>", lambda e: self.search_entry.focus_set())
 
-        self.book_search_button = ttk.Button(text="Search for books", command=self.book_search)
-        self.book_search_button.grid(column=3, row=3)
+        self.menu = ttk.OptionMenu(self, self.selected_option, self.options[0], *self.options)
+        self.menu.grid(column=3, row=5)
+        self.menu.bind("<Return>", self.search)
 
-        self.paper_search_button = ttk.Button(text="Search for papers", command=self.paper_search)
-        self.paper_search_button.grid(column=4, row=3)
-
-        self.web_cite_button = ttk.Button(text="Cite website", command=self.web_search)
-        self.web_cite_button.grid(column=5, row=3)
+        self.search_button = ttk.Button(text="Search for citations", command=self.search)
+        self.search_button.grid(column=4, row=5)
 
         self.previous_button = ttk.Button(text="Previous", command=self.previous_ref)
-        self.previous_button.grid(column=1, row=6)
-
+        self.previous_button.grid(column=1, row=13)
+    
         self.next_button = ttk.Button(text="Next", command=self.next_ref)
-        self.next_button.grid(column=2, row=6)
-
+        self.next_button.grid(column=2, row=13)
+        
         self.link_field = ttk.Label(self, text = "", width = 100, cursor = "hand2")
-        self.link_field.grid(column=1, row=4, columnspan = 5, pady=10)
-        self.link_field.bind("<Button-1>", self.open_link)
+        self.link_field.grid(column=1, row=7, columnspan = 5, pady=10)
+        self.link_field.bind("<Button-1>", lambda e: webbrowser.open_new(self.current_link()))
 
         self.ref_field = ttk.Label(self, text = "", width = 100)
-        self.ref_field.grid(column=1, row=5, columnspan = 5, pady=10)
+        self.ref_field.grid(column=1, row=8, columnspan = 5, pady=10)
+        # focus is automatically set to ref_field after a search
+        self.ref_field.bind("<Tab>", lambda e: self.search_entry.focus_set())
+        self.ref_field.bind("p", self.previous_ref)
+        self.ref_field.bind("<Left>", self.previous_ref)
+        self.ref_field.bind("n", self.next_ref)
+        self.ref_field.bind("<Right>", self.next_ref)
+        self.ref_field.bind("<Control-s>", self.ref_save)
+        self.ref_field.bind("<Control-c>", self.tag_to_clipboard)
 
         self.save_button = ttk.Button(text="Save to Bibliography", command=self.ref_save)
-        self.save_button.grid(column=3, row=6)
-
+        self.save_button.grid(column=3, row=13)
+        
         self.copy_tag_button = ttk.Button(text="Copy tag to clipboard", command=self.tag_to_clipboard)
-        self.copy_tag_button.grid(column=4, row=6, columnspan = 2)
+        self.copy_tag_button.grid(column=4, row=13)
+        
+        self.numbers_field = ttk.Label(self, background = "white")
+        self.numbers_field.grid(column=1, row=15, columnspan = 2)
 
-        self.numbers_field = ttk.Label(self)
-        self.numbers_field.config(background = "white")
-        self.numbers_field.grid(column=1, row=7, columnspan = 2)
+        self.notifications_field = ttk.Label(self, background = "white")
+        self.notifications_field.grid(column=3, row=15, columnspan = 2)
 
-        self.notifications_field = ttk.Label(self)
-        self.notifications_field.config(background = "white")
-        self.notifications_field.grid(column=3, row=7, columnspan = 2)
+        for i in range(0, 4):
+            shortcuts = ["p / left", "n / right", "ctrl-s", "ctrl-c"]
+            label = ttk.Label(self)
+            label.configure(text = shortcuts[i], background = "white")
+            label.grid(column = i+1, row = 10)
 
-    def update_settings_file(self):
-        with open('../settings.json', 'w+') as fp:
-            json.dump(self.settings, fp)
+        self.search_bar_shortcut = ttk.Label(self)
+        self.search_bar_shortcut.configure(text = "ctrl-L / Tab (after search)", background = "white")
+        self.search_bar_shortcut.grid(column=1, row=6, columnspan=2)
 
-    def get_settings(self):
-        with open('../settings.json', 'r+') as fp:
-            self.settings = json.load(fp)
-        if not self.settings:
-            self.settings = {"bib_path":""}
 
+    
     def ask_bib_dir(self):
         self.settings["bib_path"] = filedialog.askopenfilename()
         self.update_settings_file()
         self.update_fields()
 
-    def ref_save(self):
+    def ref_save(self, *args):
         save_to_bib.save_to_bib(self.refs[self.counter], self.settings["bib_path"])
         self.notifications_field.config(text="Reference successfully added")
 
@@ -103,47 +113,48 @@ class CitMan(Tk):
         else:
             return ""
 
-    def book_search(self):
+    def search(self, *args):
         self.reset()
-        self.search_type = "book"
-        book_name = self.search_entry.get()
-        self.links_list = book_cite.goodreads_results(book_name)
-        if self.links_list:
-            new_ref = book_cite.citation_from_url(self.current_link())
-        else:
-            new_ref = "No results found on goodreads"
+        self.notifications_field.config(text = "Searching...")
+        self.search_type = self.selected_option.get()
+        if self.search_type == self.options[0]:
+            book_name = self.search_entry.get()
+            self.links_list = book_cite.goodreads_results(book_name)
+            if self.links_list:
+                new_ref = book_cite.citation_from_url(self.current_link())
+            else:
+                new_ref = "No results found on goodreads"
+
+        elif self.search_type == self.options[1]:
+            paper_name = self.search_entry.get()
+            self.links_list = paper_cite.google_scholar_query(paper_name)
+            if self.links_list:
+                new_ref = paper_cite.return_bib(self.current_link())
+            else:
+                new_ref = "No results found on Google scholar"
+
+        elif self.search_type == self.options[2]:
+            web_url = self.search_entry.get()
+            self.links_list.append(web_url)
+            new_ref = web_cite.bibtex_from_link(self.current_link())
+
         self.refs.append(new_ref)
         self.update_fields()
-
-    def paper_search(self):
-        self.reset()
-        self.search_type = "paper"
-        paper_name = self.search_entry.get()
-        self.links_list = paper_cite.google_scholar_query(paper_name)
-        if self.links_list:
-            new_ref = paper_cite.return_bib(self.current_link())
-        else:
-            new_ref = "No results found on Google scholar"
-        self.refs.append(new_ref)
-        self.update_fields()
-
-    def web_search(self):
-        self.reset()
-        self.search_type = "web"
-        web_url = self.search_entry.get()
-        self.links_list.append(web_url)
-        new_ref = web_cite.bibtex_from_link(self.current_link())
-        self.refs.append(new_ref)
-        self.update_fields()
-
-    def open_link(self, event=None):
-        webbrowser.open_new(self.current_link())
+        self.notifications_field.config(text = "Reference found")
+        self.ref_field.focus_set()
 
     def reset(self):
-        self.search_type = ""
         self.counter = 0
         self.refs = []
         self.links_list = []
+        self.search_type = ""
+
+    def create_menu_options(self):
+        self.options = ["Book - goodreads",
+            "Paper - Google scholar",
+            "Cite web resource"]
+        self.selected_option = StringVar(self)
+        self.selected_option.set(self.options[0])
 
     def update_fields(self):
         self.link_field.config(text = self.current_link())
@@ -151,38 +162,48 @@ class CitMan(Tk):
         self.numbers_field.config(text=str(self.counter + 1))
         self.bib_path_field.config(text=self.settings["bib_path"])
 
-    def previous_ref(self):
+    def previous_ref(self, *args):
         if self.counter == 0:
             pass
         else:
             self.counter = self.counter - 1
             self.update_fields()
 
-    def next_ref(self):
+    def next_ref(self, *args):
         self.counter = self.counter + 1
         if self.counter >= len(self.links_list):
-            new_ref = "Limit reached"
+            new_ref = "No more references available"
             self.refs.append(new_ref)
-        else:
-            if self.counter < len(self.refs):
-                pass
+        elif self.counter == len(self.refs):
+            self.notifications_field.config(text = "Searching...")
+            if self.search_type == self.options[0]:
+                new_ref = book_cite.citation_from_url(self.current_link())
+            elif self.search_type == self.options[1]:
+                new_ref = paper_cite.return_bib(self.current_link())
             else:
-                if self.search_type == "book":
-                    new_ref = book_cite.citation_from_url(self.current_link())
-                elif self.search_type == "paper":
-                    new_ref = paper_cite.return_bib(self.current_link())
-                else:
-                    new_ref = ""
-                self.refs.append(new_ref)
+                new_ref = ""
+            self.refs.append(new_ref)
+            self.notifications_field.config(text = "Reference found")
         self.update_fields()
 
-    def tag_to_clipboard(self):
+    def tag_to_clipboard(self, *args):
         tag = tag_from_ref.get_tag(self.current_ref())
         if tag == "No tag found":
             self.notifications_field.config(text = tag)
         else:
             pyperclip.copy(tag)
             self.notifications_field.config(text = tag + " added to clipboard")
+
+    def update_settings_file(self):
+        with open('../settings.json', 'w+') as fp:
+            json.dump(self.settings, fp)
+
+    def get_settings(self):
+        with open('../settings.json', 'r+') as fp:
+            self.settings = json.load(fp)
+        if not self.settings:
+            self.settings = {"bib_path":""}
+
 
 def show():
     x = CitMan()

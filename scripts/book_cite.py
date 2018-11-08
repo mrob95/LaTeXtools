@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen, quote
 import re
-
-
 import time
 
 # takes URL, returns beautiful soup
@@ -112,8 +110,7 @@ def build_citation(data):
     citation3 = "},\n publisher={" + data["publisher"] + "}"
     citation4 = "\n}\n"
 
-    # If the year first published is not the same as the year the returned edition was published,
-    # format the year as first published/edition published
+    
     if data["first_published"] == "":
         tag = first_name + data["pub_year"] + first_title
         year_formatted = data["pub_year"]
