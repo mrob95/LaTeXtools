@@ -63,7 +63,13 @@ def get_book_data(url):
     pub_date_match = re.search(r'Published\n(.*)\n', details)
     if pub_date_match:
         data["pub_date"] = pub_date_match.group(1).strip()
-        data["pub_year"] = data["pub_date"].split(" ")[-1]
+        # regex to find years
+        years = re.findall(r'[-12]?\d?\d{2}\s?B?[AC]?[DE]?', data["pub_date"])
+        if years:
+            # take the last year found, just in case it matches another number as well
+            data["pub_year"] = years[-1].strip()
+        else:
+            data["pub_year"] = ""
     else:
         data["pub_date"] = ""
         data["pub_year"] = ""
@@ -76,11 +82,14 @@ def get_book_data(url):
 
     first_published_match = re.search(r'first\ published\ (.*)\)', details)
     if first_published_match:
-        data["first_published"] = first_published_match.group(1).strip().split(" ")[-1]
+        years = re.findall(r'[-12]?\d?\d{2}\s?B?[AC]?[DE]?', first_published_match.group(1))
+        if years:
+            data["first_published"] = years[-1].strip()
     else:
         data["first_published"] = ""
 
     return data
+
 
 '''
 Takes the dict from get_book_data and builds a bibTeX-style citation which
@@ -145,3 +154,4 @@ def citation_from_name(book_name):
         data = get_book_data(url)
         ref = build_citation(data)
     return ref
+

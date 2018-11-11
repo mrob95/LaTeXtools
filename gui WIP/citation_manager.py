@@ -22,6 +22,9 @@ class CitMan(Tk):
         self.reset()
         self.create_menu_options()
 
+        # self.theme = ttk.Style()
+        # self.theme.theme_use("default")
+
         self.padding = ttk.Label(self)
         self.padding.config(background="white")
         self.padding.grid(column=0, row=0, padx=10, pady=2)
